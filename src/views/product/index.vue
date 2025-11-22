@@ -1655,7 +1655,25 @@ const toggleFaq = (index) => {
   padding: 16px 48px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  // 使用渐变阴影替代实线边框，实现模糊融合效果
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(231, 231, 231, 0.25) 20%,
+      rgba(231, 231, 231, 0.4) 50%,
+      rgba(231, 231, 231, 0.25) 80%,
+      transparent 100%
+    );
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  }
 
   .nav-left {
     .logo {

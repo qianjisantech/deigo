@@ -53,15 +53,31 @@ const goToHome = () => {
 .top-header {
   height: 64px;
   background: #fff;
-  border-bottom: 1px solid #e7e7e7;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   position: relative;
   z-index: 100;
 
+  // 使用渐变阴影替代实线边框，实现模糊融合效果
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(231, 231, 231, 0.3) 20%,
+      rgba(231, 231, 231, 0.5) 50%,
+      rgba(231, 231, 231, 0.3) 80%,
+      transparent 100%
+    );
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  }
+
   .header-content {
-    max-width: 1200px;
+    width: 100%;
     height: 100%;
-    margin: 0 auto;
     padding: 0 24px;
     display: flex;
     align-items: center;

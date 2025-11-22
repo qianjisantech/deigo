@@ -454,12 +454,13 @@ const handleRegister = async () => {
 
 <style scoped lang="scss">
 .login-container {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   background: linear-gradient(135deg, #e3f2fd 0%, #f3f7ff 50%, #f9fbff 100%);
   position: relative;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 
   // 背景装饰
   .bg-decoration {
@@ -529,7 +530,7 @@ const handleRegister = async () => {
   .login-main {
     position: relative;
     z-index: 1;
-    flex: 0 1 auto;
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -775,13 +776,15 @@ const handleRegister = async () => {
 
   // 底部版权
   .login-footer {
-    height: 20px;
+    min-height: 60px;
+    padding: 20px 0;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     z-index: 1;
     flex-shrink: 0;
+    margin-top: auto;
 
     .footer-content {
       text-align: center;
@@ -789,8 +792,8 @@ const handleRegister = async () => {
       p {
         margin: 0;
         font-size: 13px;
-        color: rgba(255, 255, 255, 0.8);
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        color: rgba(0, 0, 0, 0.6);
+        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
       }
     }
   }

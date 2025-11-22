@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // 自定义插件：处理 tdesign-icons 的 globalThis-config.js 缺失问题
 const fixTdesignIconsPlugin = () => {
@@ -45,7 +48,7 @@ const fixAxiosGlobalPlugin = () => {
 
 // https://vite.dev/config/
 export default defineConfig({
-
+  base: '/',
   plugins: [
     vue(),
     fixTdesignIconsPlugin(),
@@ -55,7 +58,9 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, 'src')
     },
-    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue']
+    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue'],
+    // 确保路径解析正确
+    preserveSymlinks: false
   },
   server: {
     port: 3000,
@@ -75,6 +80,8 @@ export default defineConfig({
       include: [/tdesign-vue-next/, /tdesign-icons-vue-next/, /node_modules/]
     },
     rollupOptions: {
+      // 确保入口文件正确
+      input: path.resolve(__dirname, 'index.html'),
       output: {
         manualChunks: {
           'tdesign': ['tdesign-vue-next', 'tdesign-icons-vue-next'],

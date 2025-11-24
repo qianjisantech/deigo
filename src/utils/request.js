@@ -4,8 +4,10 @@ import Cookies from 'js-cookie'
 import { useLoadingStore } from '@/store/loading'
 import { objectKeysToSnake, objectKeysToCamel } from './caseConverter'
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
+
 const request = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://47.100.0.96:80',
+  baseURL: API_BASE_URL,
   timeout: 10000
 })
 

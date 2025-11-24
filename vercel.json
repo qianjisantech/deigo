@@ -5,6 +5,14 @@
   "installCommand": "npm install",
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "http://47.100.0.96:80/$1"
+    },
+    {
+      "source": "/ws/(.*)",
+      "destination": "http://47.100.0.96:8080/ws/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

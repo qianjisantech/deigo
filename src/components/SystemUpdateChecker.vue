@@ -97,9 +97,33 @@ let checkTimer = null
 // 已显示过的公告ID集合（避免重复显示）
 const shownAnnouncementIds = new Set()
 
+const resolveWsHttpBase = () => {
+  if (import.meta.env.VITE_WS_URL) {
+    try {
+      return new URL(import.meta.env.VITE_WS_URL, window.location.origin).origin
+    } catch (error) {
+      console.warn('[系统更新检查] 解析 VITE_WS_URL 失败，使用默认地址', error)
+    }
+  }
+
+  if (import.meta.env.VITE_API_BASE_URL) {
+    try {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL.startsWith('http')
+        ? new URL(import.meta.env.VITE_API_BASE_URL)
+        : new URL(import.meta.env.VITE_API_BASE_URL, window.location.origin)
+      return apiUrl.origin
+    } catch (error) {
+      console.warn('[系统更新检查] 解析 VITE_API_BASE_URL 失败，使用当前站点', error)
+    }
+  }
+
+  return window.location.origin
+}
+
 // WebSocket 连接
 const connectWebSocket = () => {
-  const wsUrl = `${import.meta.env.VITE_WS_URL || 'http://47.100.0.96'}/ws`
+  const wsBase = resolveWsHttpBase().replace(/\/$/, '')
+  const wsUrl = `${wsBase}/ws`
 
   // 从 Cookie 获取 token
   const token = Cookies.get('dcp_token')

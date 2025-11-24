@@ -194,8 +194,18 @@ const userInitial = computed(() => {
 const initWebSocket = () => {
   // 获取WebSocket协议（根据当前页面协议）
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-  // 获取后端地址
-  const host = import.meta.env.VITE_API_BASE_URL?.replace(/^https?:\/\//, '') || '47.100.0.96:8080'
+
+  // 解析 API 基础地址，优先使用环境变量，否则使用当前站点
+  let host = window.location.host
+  if (import.meta.env.VITE_API_BASE_URL && import.meta.env.VITE_API_BASE_URL.startsWith('http')) {
+    try {
+      const apiUrl = new URL(import.meta.env.VITE_API_BASE_URL)
+      host = apiUrl.host
+    } catch (error) {
+      console.warn('[WebSocket] 解析 API 基础地址失败，使用当前站点 host', error)
+    }
+  }
+
   const wsUrl = `${protocol}//${host}/ws/top-notification`
 
   console.log('[WebSocket] 尝试连接:', wsUrl)

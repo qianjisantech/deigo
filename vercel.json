@@ -10,7 +10,7 @@
     },
     {
       "source": "/ws/(.*)",
-      "destination": "http://47.100.0.96:8080/ws/$1"
+      "destination": "http://47.100.0.96:80/ws/$1"
     },
     {
       "source": "/(.*)",

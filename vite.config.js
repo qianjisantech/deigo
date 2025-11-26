@@ -48,7 +48,10 @@ const fixAxiosGlobalPlugin = () => {
 
 // 自定义插件：修复 HTML 中的路径解析问题
 const fixHtmlPathPlugin = () => {
-  const projectRoot = process.cwd()
+  const fs = require('fs')
+  // 使用与 root 相同的逻辑
+  const projectRoot = process.env.VERCEL ? process.cwd() : __dirname
+  
   return {
     name: 'fix-html-path',
     enforce: 'pre',
@@ -72,8 +75,11 @@ const fixHtmlPathPlugin = () => {
 }
 
 // https://vite.dev/config/
+// 获取项目根目录（在 Vercel 构建时也能正确工作）
+const rootDir = process.env.VERCEL ? process.cwd() : __dirname
+
 export default defineConfig({
-  root: process.cwd(), // 使用当前工作目录，确保在 Vercel 构建时路径正确
+  root: rootDir,
   base: '/',
   plugins: [
     fixHtmlPathPlugin(),
@@ -83,7 +89,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(process.cwd(), 'src')
+      '@': path.resolve(rootDir, 'src')
     },
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue'],
     // 确保路径解析正确
@@ -116,10 +122,11 @@ export default defineConfig({
     exclude: ['@stomp/stompjs', 'sockjs-client']
   },
   build: {
-    commonjsOptions: {
-      include: [/tdesign-vue-next/, /tdesign-icons-vue-next/, /node_modules/]
-    },
+    // 明确指定入口文件
     rollupOptions: {
+      input: {
+        main: path.resolve(rootDir, 'index.html')
+      },
       output: {
         manualChunks: {
           'tdesign': ['tdesign-vue-next', 'tdesign-icons-vue-next'],

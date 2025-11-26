@@ -102,13 +102,13 @@
                 <div class="project-name">{{ project.name }}</div>
                 <div class="project-meta">{{ project.tasks }} 个任务 · {{ project.members }} 人</div>
               </div>
-              <div class="project-progress">
-                <t-progress
-                  :percentage="project.progress"
-                  :theme="project.progress >= 80 ? 'success' : project.progress >= 50 ? 'warning' : 'default'"
-                  size="small"
-                />
-              </div>
+            <div class="project-progress">
+              <t-progress
+                :percentage="project.progress"
+                :status="getProjectStatus(project.progress)"
+                size="small"
+              />
+            </div>
             </div>
           </div>
         </t-card>
@@ -187,7 +187,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, markRaw } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import {
@@ -249,7 +249,7 @@ const metrics = ref([
     value: 156,
     trend: 12,
     desc: '较上周',
-    icon: TaskIcon,
+    icon: markRaw(TaskIcon),
     iconBg: '#E8F4FD',
     iconColor: '#0052D9'
   },
@@ -259,7 +259,7 @@ const metrics = ref([
     value: 45,
     trend: -5,
     desc: '较上周',
-    icon: ChartIcon,
+    icon: markRaw(ChartIcon),
     iconBg: '#FFF4E8',
     iconColor: '#E37318'
   },
@@ -269,7 +269,7 @@ const metrics = ref([
     value: 28,
     trend: 8,
     desc: '较上月',
-    icon: UserIcon,
+    icon: markRaw(UserIcon),
     iconBg: '#E8F8F2',
     iconColor: '#00A870'
   },
@@ -279,7 +279,7 @@ const metrics = ref([
     value: 12,
     trend: 3,
     desc: '较上月',
-    icon: ViewListIcon,
+    icon: markRaw(ViewListIcon),
     iconBg: '#F3E8FF',
     iconColor: '#834EC2'
   }
@@ -290,37 +290,37 @@ const quickActions = ref([
   {
     title: '创建任务',
     path: '/task/create',
-    icon: TaskIcon,
+    icon: markRaw(TaskIcon),
     gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
   },
   {
     title: '我的事项',
     path: '/workspace/issue',
-    icon: ViewListIcon,
+    icon: markRaw(ViewListIcon),
     gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
   },
   {
     title: '日历视图',
     path: '/view/calendar',
-    icon: CalendarIcon,
+    icon: markRaw(CalendarIcon),
     gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
   },
   {
     title: '团队管理',
     path: '/team',
-    icon: UserIcon,
+    icon: markRaw(UserIcon),
     gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
   },
   {
     title: '数据报表',
     path: '/reports',
-    icon: ChartIcon,
+    icon: markRaw(ChartIcon),
     gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
   },
   {
     title: '系统设置',
     path: '/settings',
-    icon: SettingIcon,
+    icon: markRaw(SettingIcon),
     gradient: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)'
   }
 ])
@@ -356,6 +356,16 @@ const projects = ref([
     members: 4
   }
 ])
+
+const getProjectStatus = (progress) => {
+  if (progress >= 80) {
+    return 'success'
+  }
+  if (progress >= 50) {
+    return 'warning'
+  }
+  return 'error'
+}
 
 // 待办事项
 const todos = ref([

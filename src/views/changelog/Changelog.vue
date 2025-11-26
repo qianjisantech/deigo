@@ -35,7 +35,7 @@
     </div>
 
     <!-- 发布日志列表 -->
-    <div v-else class="changelog-list">
+    <div v-else class="changelog-list" style="flex: 1; overflow-y: auto; padding: 16px 24px;">
       <div
         v-for="changelog in filteredChangelogList"
         :key="changelog.id"
@@ -355,14 +355,17 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  padding: 0;
+  margin: 0;
 
   .changelog-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 32px 40px 24px;
+    padding: 16px 24px;
     background: #fff;
     border-bottom: 1px solid #e7e7e7;
+    flex-shrink: 0;
 
     .header-left {
       flex: 1;
@@ -404,7 +407,7 @@ onMounted(() => {
   .changelog-list {
     flex: 1;
     overflow-y: auto;
-    padding: 24px 40px;
+    padding: 0;
 
     .changelog-card {
       background: #fff;

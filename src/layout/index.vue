@@ -43,7 +43,9 @@ const handleSecondaryChange = (isShow) => {
 
 // 根据二级菜单状态动态计算内容区域的左边距
 const sidebarWidth = computed(() => {
-  const width = hasSecondary.value ? '280px' : '80px'
+  // 如果是发布日志，二级菜单宽度为 300px，否则为 280px
+  const secondaryWidth = route.path.startsWith('/changelog') ? '300px' : '280px'
+  const width = hasSecondary.value ? secondaryWidth : '80px'
   const viewportWidth = window.innerWidth
 
   console.log('======================== Layout 计算信息 ========================')
@@ -171,9 +173,10 @@ onMounted(async () => {
 
     .layout-content {
       flex: 1;
-      padding: 2px;
+      padding: 0;
       overflow-y: auto;
       background: #f5f7fa;
+      height: 100%;
 
       // 优化滚动条样式
       &::-webkit-scrollbar {

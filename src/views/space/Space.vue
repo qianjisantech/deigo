@@ -90,19 +90,6 @@
       @success="handleFormSuccess"
     />
 
-    <!-- 空间设置抽屉 -->
-    <t-drawer
-      v-model:visible="showSettingsDrawer"
-      :header="`空间设置 - ${currentSpace?.name || ''}`"
-      size="large"
-      :footer="false"
-      destroy-on-close
-    >
-      <SpaceSettingsDrawer
-        v-if="showSettingsDrawer && currentSpace"
-        :space-id="currentSpace.id"
-      />
-    </t-drawer>
   </div>
 </template>
 
@@ -112,7 +99,6 @@ import { useRouter } from 'vue-router'
 import { MessagePlugin, DialogPlugin } from 'tdesign-vue-next'
 import { getSpaceListPage, deleteSpace } from '@/api/space.js'
 import SpaceFormDialog from './components/SpaceFormDialog.vue'
-import SpaceSettingsDrawer from './components/SpaceSettingsDrawer.vue'
 
 const router = useRouter()
 
@@ -165,9 +151,6 @@ const spaceList = ref([])
 
 // 控制表单对话框显示
 const showFormDialog = ref(false)
-
-// 控制设置抽屉显示
-const showSettingsDrawer = ref(false)
 
 // 当前操作的空间数据
 const currentSpace = ref(null)
@@ -276,10 +259,12 @@ const handleDelete = (row) => {
   })
 }
 
-// 处理进入空间
+// 处理进入空间：跳转到空间设置页面
 const handleEnterSpace = (row) => {
-  currentSpace.value = { ...row }
-  showSettingsDrawer.value = true
+  router.push({
+    path: '/space/settings',
+    query: { spaceId: row.id }
+  })
 }
 
 // 处理表单提交成功

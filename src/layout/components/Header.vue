@@ -2,7 +2,16 @@
   <div class="header-container">
     <div class="header-left">
       <AppLogo :clickable="true" />
-      <h2 class="page-title">{{ pageTitle }}</h2>
+      <template v-if="isSpaceSettings">
+        <t-select
+          v-model="currentSpaceId"
+          :options="spaceOptions"
+          size="medium"
+          placeholder="选择空间"
+          class="space-switch-select"
+        />
+      </template>
+      <h2 v-else class="page-title">{{ pageTitle }}</h2>
     </div>
 
     <!-- 滚动通知 -->
@@ -14,8 +23,8 @@
             v-for="(notice, index) in notices"
             :key="index"
             class="notice-item"
-            :class="{ 'notice-clickable': notice.link }"
-            @click="handleNoticeClick(notice)"
+            :class="{ 'notice-clickable': notice.showUnderline || notice.link }"
+            @click="notice.link ? handleNoticeClick(notice) : null"
           >
             {{ notice.title }}
           </span>
@@ -102,6 +111,7 @@ import { getBannerNotifications } from '@/api/notification'
 import { searchIssues } from '@/api/workspace'
 import tracking from '@/utils/tracking'
 import AppLogo from '@/components/AppLogo.vue'
+import { getSpaceList } from '@/api/space'
 
 const router = useRouter()
 const route = useRoute()
@@ -120,10 +130,40 @@ const username = computed(() => userStore.userInfo?.username || 'Admin')
 // 通知数据
 const notices = ref([])
 
+// 从环境变量读取通知配置
+const loadNoticeFromEnv = () => {
+  const title = import.meta.env.VITE_TOP_NOTIFICATION_TITLE
+  const type = import.meta.env.VITE_TOP_NOTIFICATION_TYPE
+  const link = import.meta.env.VITE_TOP_NOTIFICATION_LINK
+  const showUnderline = import.meta.env.VITE_TOP_NOTIFICATION_UNDERLINE
+
+  // 如果配置了通知内容，使用环境变量的值
+  if (title) {
+    const noticeConfig = {
+      id: 'env-notice',
+      title: title,
+      type: type ? Number(type) : 1, // 默认为信息类型
+      link: link && link.trim() ? link.trim() : undefined, // 跳转链接
+      showUnderline: showUnderline === 'true' || showUnderline === '1' // 是否显示下划线
+    }
+    console.log('[Header] 从环境变量加载通知:', noticeConfig)
+    notices.value = [noticeConfig]
+    return true // 表示已从环境变量加载
+  }
+  console.log('[Header] 未配置环境变量通知')
+  return false // 表示未配置环境变量
+}
+
 // WebSocket 连接
 let websocket = null
 let reconnectTimeout = null
 let heartbeatInterval = null
+
+// 当前是否为空间设置页面
+const isSpaceSettings = computed(() => route.path === '/space/settings')
+
+// 空间列表（来自 /space/list 接口）
+const spaces = ref([])
 
 // 页面标题映射
 const pageTitleMap = {
@@ -162,6 +202,10 @@ const getSettingsTitle = (path) => {
 }
 
 const pageTitle = computed(() => {
+  // 空间设置页面不显示固定标题，改为空间下拉框
+  if (isSpaceSettings.value) {
+    return ''
+  }
   // 如果是设置页面，使用特殊处理
   if (route.path.startsWith('/settings')) {
     return getSettingsTitle(route.path)
@@ -186,9 +230,51 @@ const pageTitle = computed(() => {
   return '工作台'
 })
 
+// 空间下拉：空间列表（来自接口数据）
+const spaceOptions = computed(() => {
+  const list = spaces.value || []
+  return list.map(space => ({
+    label: space.name,
+    value: String(space.id)
+  }))
+})
+
+// 当前选择的空间 ID（字符串形式，方便和下拉绑定）
+const currentSpaceId = computed({
+  get() {
+    const idFromQuery = route.query.spaceId || route.query.id
+    const idFromParam = route.params.spaceId || route.params.id
+    const id = idFromQuery || idFromParam
+    if (id) return String(id)
+
+    // 如果路由上没有空间ID，fallback 到第一个空间
+    const list = spaces.value || []
+    return list.length > 0 ? String(list[0].id) : ''
+  },
+  set(val) {
+    if (!val) return
+    router.push({
+      path: '/space/settings',
+      query: {
+        spaceId: val
+      }
+    })
+  }
+})
+
 const userInitial = computed(() => {
   return username.value.charAt(0).toUpperCase()
 })
+
+// 顶部通知配置：通过环境变量控制
+// 方式1：静态配置（推荐）- 在 .env 或 .env.production 中配置：
+//   VITE_TOP_NOTIFICATION_TITLE=通知内容文本
+//   VITE_TOP_NOTIFICATION_TYPE=1  (1=信息/蓝色, 2=警告/橙色, 3=错误/红色, 4=成功/绿色)
+//   VITE_TOP_NOTIFICATION_LINK=https://example.com  (可选，点击通知跳转的链接)
+//
+// 方式2：动态 WebSocket（如果未配置静态通知）- 在 .env 中配置：
+//   VITE_ENABLE_TOP_NOTIFICATION=true
+const webSocketTemporarilyDisabled = import.meta.env.VITE_ENABLE_TOP_NOTIFICATION !== 'true'
 
 // 初始化WebSocket连接
 const initWebSocket = () => {
@@ -283,14 +369,44 @@ const closeWebSocket = () => {
   }
 }
 
-// 组件挂载时初始化WebSocket
+// 加载空间列表
+const loadSpaces = async () => {
+  try {
+    const res = await getSpaceList()
+    if (res.success || res.code === 200) {
+      spaces.value = res.data || []
+
+      // 如果当前在空间设置页且路由上没有 spaceId，则默认跳到第一个空间
+      if (isSpaceSettings.value && !route.query.spaceId && spaces.value.length > 0) {
+        router.replace({
+          path: '/space/settings',
+          query: { spaceId: spaces.value[0].id }
+        })
+      }
+    }
+  } catch (error) {
+    console.error('[Header] 加载空间列表失败:', error)
+  }
+}
+
+// 组件挂载时初始化通知和空间列表
 onMounted(() => {
-  initWebSocket()
+  // 优先从环境变量加载通知
+  const loadedFromEnv = loadNoticeFromEnv()
+  
+  // 如果环境变量没有配置通知，且 WebSocket 功能未禁用，则尝试 WebSocket
+  if (!loadedFromEnv && !webSocketTemporarilyDisabled) {
+    initWebSocket()
+  }
+  
+  loadSpaces()
 })
 
 // 组件卸载时关闭WebSocket
 onBeforeUnmount(() => {
-  closeWebSocket()
+  if (!webSocketTemporarilyDisabled) {
+    closeWebSocket()
+  }
 })
 
 const handleUserCenter = async () => {
@@ -468,6 +584,9 @@ const getNoticeTypeClass = (type) => {
     :deep(.app-logo) {
       padding-right: 24px;
       border-right: 1px solid #e7e7e7;
+      .space-switch-select {
+        min-width: 200px;
+      }
     }
 
     .page-title {
@@ -508,13 +627,6 @@ const getNoticeTypeClass = (type) => {
           font-size: 13px;
           margin-right: 80px;
           display: inline-block;
-
-          &::before {
-            content: '●';
-            margin-right: 8px;
-            font-size: 8px;
-            vertical-align: middle;
-          }
 
           &.notice-clickable {
             cursor: pointer;

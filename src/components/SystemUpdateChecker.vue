@@ -97,6 +97,9 @@ let checkTimer = null
 // 已显示过的公告ID集合（避免重复显示）
 const shownAnnouncementIds = new Set()
 
+// 临时禁用 WebSocket，防止连接失败
+const systemWebSocketDisabled = true
+
 const resolveWsHttpBase = () => {
   if (import.meta.env.VITE_WS_URL) {
     try {
@@ -325,13 +328,17 @@ const handleLater = () => {
 
 // 组件挂载
 onMounted(() => {
-  connectWebSocket()
+  if (!systemWebSocketDisabled) {
+    connectWebSocket()
+  }
 })
 
 // 组件卸载
 onUnmounted(() => {
   stopCheckTimer()
-  WebSocketClient.disconnect()
+  if (!systemWebSocketDisabled) {
+    WebSocketClient.disconnect()
+  }
 })
 </script>
 

@@ -24,7 +24,18 @@
 
       <!-- 二级菜单栏 -->
       <transition name="slide">
-        <div v-if="showSecondary" class="secondary-menu">
+        <div v-if="showSecondary" class="secondary-menu" :class="{ 'is-changelog': activeFirstMenu === '/changelog' }">
+          <!-- 二级菜单顶部返回按钮（仅空间模块显示） -->
+          <div v-if="activeFirstMenu === '/space'" class="secondary-footer">
+            <t-button
+              theme="default"
+              variant="outline"
+              size="small"
+              @click="handleSecondaryBack"
+            >
+              <span>返回空间</span>
+            </t-button>
+          </div>
           <!-- 视图加载中状态 -->
           <div v-if="viewsLoading && activeFirstMenu === '/workspace'" class="views-loading-container">
             <t-loading text="正在加载视图..." size="small" />
@@ -159,6 +170,8 @@
             </template>
 
           </div>
+
+          <!-- 原底部返回按钮已移到顶部 -->
         </div>
       </transition>
     </div>
@@ -199,6 +212,7 @@ import {
   deleteViewFolder,
   getViewFolderList
 } from '@/api/workspace'
+import { getSpaceList } from '@/api/space'
 import { getChangelogList, deleteChangelog } from '@/api/changelog'
 import { MessagePlugin, DialogPlugin } from 'tdesign-vue-next'
 import CreateViewDialog from './components/CreateViewDialog.vue'
@@ -233,9 +247,28 @@ const viewsLoading = ref(false)
 const changelogList = ref([])
 const changelogLoaded = ref(false) // 标记是否已加载过发布日志
 
+// 空间列表（用于默认进入空间设置时带上 spaceId）
+const spaces = ref([])
+const spacesLoaded = ref(false)
+
+const loadSpaces = async () => {
+  if (spacesLoaded.value) return
+  try {
+    const res = await getSpaceList()
+    if (res.success || res.code === 200) {
+      spaces.value = res.data || []
+    }
+  } catch (error) {
+    console.error('[Sidebar] 获取空间列表失败:', error)
+  } finally {
+    spacesLoaded.value = true
+  }
+}
+
 // 加载发布日志列表
 const loadChangelogList = async () => {
   try {
+    console.log('[发布日志] 开始加载发布日志列表...')
     const res = await getChangelogList()
     if (res.success) {
       changelogList.value = res.data || []
@@ -244,6 +277,8 @@ const loadChangelogList = async () => {
         return new Date(b.createTime) - new Date(a.createTime)
       })
       changelogLoaded.value = true
+      console.log('[发布日志] 加载完成，共', changelogList.value.length, '条日志')
+      console.log('[发布日志] 日志列表:', changelogList.value.map(log => `${log.version} - ${log.title}`))
     } else {
       console.error('获取发布日志列表失败:', res.message)
     }
@@ -429,6 +464,24 @@ const menuList = computed(() => {
 
 // 当前二级菜单列表
 const currentSecondaryMenu = computed(() => {
+  // 特殊处理：空间的二级菜单：项目管理 + 成员管理
+  if (activeFirstMenu.value === '/space') {
+    return [
+      {
+        label: '项目管理',
+        value: '/space/projects',
+        path: '/space/projects',
+        icon: 'app'
+      },
+      {
+        label: '成员管理',
+        value: '/space/settings',
+        path: '/space/settings',
+        icon: 'usergroup'
+      }
+    ]
+  }
+
   // 特殊处理：发布日志的二级菜单需要动态生成
   if (activeFirstMenu.value === '/changelog') {
     const items = []
@@ -510,10 +563,16 @@ const initActiveMenu = (path) => {
     activeFirstMenu.value = 'workspace'
     showSecondary.value = true
     console.log('[路由初始化] 匹配到: 工作台')
-  } else if (path.startsWith('/space')) {
+  } else if (path === '/space') {
+    // 空间首页：只显示列表，不展示二级菜单
     activeFirstMenu.value = '/space'
     showSecondary.value = false
-    console.log('[路由初始化] 匹配到: 空间')
+    console.log('[路由初始化] 匹配到: 空间列表')
+  } else if (path.startsWith('/space/')) {
+    // 空间子页面（如 /space/settings）：展示空间相关二级菜单
+    activeFirstMenu.value = '/space'
+    showSecondary.value = true
+    console.log('[路由初始化] 匹配到: 空间子页面，展示二级菜单')
   } else if (path === '/announcement') {
     activeFirstMenu.value = '/announcement'
     showSecondary.value = false
@@ -535,6 +594,10 @@ const initActiveMenu = (path) => {
     // changelog 路径下（包括详情页）都显示二级菜单
     showSecondary.value = true
     console.log('[路由初始化] 匹配到: 发布日志')
+    // 确保加载发布日志数据
+    if (!changelogLoaded.value) {
+      loadChangelogList()
+    }
   } else if (path === '/operation-log') {
     activeFirstMenu.value = '/operation-log'
     showSecondary.value = false
@@ -750,7 +813,7 @@ onMounted(() => {
 })
 
 // 处理一级菜单点击
-const handlePrimaryMenuClick = (menu) => {
+const handlePrimaryMenuClick = async (menu) => {
   console.log('======================== 一级菜单点击 ========================')
   console.log('[一级菜单] 点击菜单:', menu.label)
   console.log('[一级菜单] 菜单值:', menu.value)
@@ -828,6 +891,20 @@ const handlePrimaryMenuClick = (menu) => {
 
   activeFirstMenu.value = menu.value
 
+  // 特殊处理：空间菜单始终直接进入空间列表，不展示二级菜单
+  if (menu.value === '/space') {
+    console.log('[一级菜单] 空间 - 直接跳转到: /space，不展示二级菜单')
+    showSecondary.value = false
+    router.push('/space')
+    activeMenu.value = '/space'
+
+    console.log('[最终状态] 激活的一级菜单:', activeFirstMenu.value)
+    console.log('[最终状态] 激活的二级菜单:', activeMenu.value)
+    console.log('[最终状态] 二级菜单展开状态:', showSecondary.value)
+    console.log('[最终状态] 当前路由路径:', route.path)
+    return
+  }
+
   console.log('[状态变化后] 激活的一级菜单:', activeFirstMenu.value)
 
   if (menu.children && menu.children.length > 0) {
@@ -851,9 +928,9 @@ const handlePrimaryMenuClick = (menu) => {
     // 如果是发布日志，跳转到列表页（展示所有日志）
     else if (menu.value === '/changelog') {
       console.log('[一级菜单] 发布日志 - 跳转到列表页')
-      // 首次点击时才加载发布日志数据
+      // 确保加载发布日志数据（如果还没加载）
       if (!changelogLoaded.value) {
-        loadChangelogList()
+        await loadChangelogList()
       }
       router.push('/changelog')
       activeMenu.value = '/changelog'
@@ -1016,14 +1093,43 @@ const toggleFolder = (folderId) => {
 }
 
 // 处理二级菜单点击
-const handleSecondaryMenuClick = (item) => {
+const handleSecondaryMenuClick = async (item) => {
   if (item.type === 'divider') return
 
   // 使用 path 或 value（兼容两种方式）
   const targetPath = item.path || item.value
 
-  // 如果有 query 参数，使用对象形式跳转
-  if (item.query) {
+  // 空间设置相关菜单（项目管理 / 成员管理）
+  if (targetPath === '/space/settings') {
+    const baseQuery = { ...(item.query || {}) }
+
+    // 保留当前 spaceId
+    const currentId =
+      route.query.spaceId ||
+      route.params.spaceId ||
+      route.query.id ||
+      route.params.id
+
+    if (currentId) {
+      baseQuery.spaceId = currentId
+      router.push({
+        path: targetPath,
+        query: baseQuery
+      })
+    } else {
+      // 没有 spaceId 时，才尝试用第一个空间作为默认
+      await loadSpaces()
+      const list = spaces.value || []
+      if (list.length > 0) {
+        baseQuery.spaceId = list[0].id
+      }
+      router.push({
+        path: targetPath,
+        query: baseQuery
+      })
+    }
+  } else if (item.query) {
+    // 其他带 query 参数的菜单
     router.push({
       path: targetPath,
       query: item.query
@@ -1105,6 +1211,14 @@ const loadMyViews = async () => {
   } finally {
     viewsLoading.value = false
   }
+}
+
+// 二级菜单返回按钮（空间模块）
+const handleSecondaryBack = () => {
+  console.log('[二级菜单] 返回空间列表')
+  showSecondary.value = false
+  activeMenu.value = '/space'
+  router.push('/space')
 }
 
 // 处理搜索
@@ -1654,6 +1768,12 @@ onUnmounted(() => {
   border-right: 1px solid #e7e7e7;
   position: relative;
 
+  // 发布日志菜单需要更宽，方便展示完整标题
+  &.is-changelog {
+    width: 300px;
+    min-width: 300px;
+  }
+
   // 视图加载中容器
   .views-loading-container {
     position: absolute;
@@ -1819,6 +1939,24 @@ onUnmounted(() => {
           padding-left: 8px;
         }
       }
+    }
+  }
+
+  .secondary-footer {
+    padding: 8px;
+    margin-top: 4px;
+    border-top: none;
+    display: flex;
+    justify-content: flex-start;
+
+    .t-button {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 10px;
+      min-height: 32px;
+      font-size: 13px;
+      width: 100%;
     }
   }
 }

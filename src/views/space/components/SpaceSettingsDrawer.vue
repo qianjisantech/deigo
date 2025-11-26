@@ -3,68 +3,63 @@
     <t-loading v-if="loading" text="加载中..." size="large" />
 
     <div v-else class="drawer-content">
-      <t-tabs v-model="activeTab" placement="top">
-        <!-- 成员管理 -->
-        <t-tab-panel value="members" label="成员管理">
-          <div class="tab-content">
-            <div class="members-section">
-              <div class="section-header">
-                <h3>空间成员</h3>
-                <t-button theme="primary" size="small" @click="handleAddMember">
-                  <template #icon>
-                    <t-icon name="add" />
-                  </template>
-                  添加成员
-                </t-button>
-              </div>
-              <t-table
-                :data="memberList"
-                :columns="memberColumns"
-                :loading="membersLoading"
-                row-key="id"
-                stripe
-                hover
-                max-height="400"
-              >
-                <template #role="{ row }">
-                  <t-tag :theme="getRoleTheme(row.role)">{{ getRoleLabel(row.role) }}</t-tag>
-                </template>
-                <template #operation="{ row }">
-                  <t-space>
-                    <t-button theme="primary" variant="text" size="small" @click="handleEditMember(row)">
-                      编辑
-                    </t-button>
-                    <t-button
-                      theme="danger"
-                      variant="text"
-                      size="small"
-                      :disabled="row.role === 'admin'"
-                      @click="handleRemoveMember(row)"
-                    >
-                      移除
-                    </t-button>
-                  </t-space>
-                </template>
-              </t-table>
-
-              <!-- 分页 -->
-              <div class="pagination-container">
-                <t-pagination
-                  v-model="memberPagination.current"
-                  v-model:page-size="memberPagination.pageSize"
-                  :total="memberPagination.total"
-                  :page-size-options="[10, 20, 50]"
-                  show-page-size
-                  show-jumper
-                  @change="handleMemberPageChange"
-                  @page-size-change="handleMemberPageSizeChange"
-                />
-              </div>
-            </div>
+      <!-- 成员管理 -->
+      <div class="section-wrapper">
+        <div class="members-section">
+          <div class="section-header">
+            <h3>空间成员</h3>
+            <t-button theme="primary" size="small" @click="handleAddMember">
+              <template #icon>
+                <t-icon name="add" />
+              </template>
+              添加成员
+            </t-button>
           </div>
-        </t-tab-panel>
+          <t-table
+            :data="memberList"
+            :columns="memberColumns"
+            :loading="membersLoading"
+            row-key="id"
+            stripe
+            hover
+            max-height="400"
+          >
+            <template #role="{ row }">
+              <t-tag :theme="getRoleTheme(row.role)">{{ getRoleLabel(row.role) }}</t-tag>
+            </template>
+            <template #operation="{ row }">
+              <t-space>
+                <t-button theme="primary" variant="text" size="small" @click="handleEditMember(row)">
+                  编辑
+                </t-button>
+                <t-button
+                  theme="danger"
+                  variant="text"
+                  size="small"
+                  :disabled="row.role === 'admin'"
+                  @click="handleRemoveMember(row)"
+                >
+                  移除
+                </t-button>
+              </t-space>
+            </template>
+          </t-table>
 
-      </t-tabs>
+          <!-- 分页 -->
+          <div class="pagination-container">
+            <t-pagination
+              v-model="memberPagination.current"
+              v-model:page-size="memberPagination.pageSize"
+              :total="memberPagination.total"
+              :page-size-options="[10, 20, 50]"
+              show-page-size
+              show-jumper
+              @change="handleMemberPageChange"
+              @page-size-change="handleMemberPageSizeChange"
+            />
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- 添加成员对话框 -->
@@ -151,7 +146,6 @@ const props = defineProps({
 })
 
 const loading = ref(false)
-const activeTab = ref('members')
 
 // 成员列表
 const memberList = ref([])
@@ -424,10 +418,15 @@ onMounted(() => {
 
   .drawer-content {
     flex: 1;
-    overflow: hidden;
+    overflow-y: auto;
+    padding: 24px 0;
 
-    .tab-content {
-      padding: 24px 0;
+    .section-wrapper {
+      margin-bottom: 32px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
 
       .members-section {
         .section-header {

@@ -6,6 +6,10 @@
 // 动态加载组件的映射
 const modules = import.meta.glob('../views/**/*.vue')
 
+// 后端组件路径别名映射（用于兼容历史/错误配置）
+const COMPONENT_ALIASES = {
+}
+
 // 固定子路由配置（不在菜单中，但需要路由）
 const FIXED_SUB_ROUTES = {
   '/changelog': [
@@ -54,10 +58,21 @@ export function generateRoutes(menus, parentPath = '') {
     // 只有菜单类型(2)才生成路由
     if (menu.menuType === 2 && menu.path && menu.component) {
       console.log(`[generateRoutes] 生成路由: ${menu.path}`)
+
+      // 特殊处理：空间相关菜单的组件映射
+      let componentPath = menu.component
+      if (menu.path === '/space') {
+        // 空间列表
+        componentPath = 'space/Space'
+      } else if (menu.path === '/space/settings') {
+        // 成员管理页面
+        componentPath = 'space/SpaceSettings'
+      }
+
       const route = {
         path: menu.path,
         name: menu.menuCode,
-        component: loadComponent(menu.component),
+        component: loadComponent(componentPath),
         meta: {
           title: menu.menuName,
           icon: menu.icon,
@@ -137,9 +152,17 @@ export function generateRoutes(menus, parentPath = '') {
  * @returns {Function} 组件加载函数
  */
 function loadComponent(componentPath) {
+  // 规范化路径：去掉前导斜杠
+  let normalizedPath = (componentPath || '').replace(/^\/+/, '')
+
+  // 应用别名映射（兼容历史/错误配置）
+  if (COMPONENT_ALIASES[normalizedPath]) {
+    normalizedPath = COMPONENT_ALIASES[normalizedPath]
+  }
+
   // 将后端返回的组件路径转换为实际的文件路径
   // 例如: "workspace/Issue" => "../views/workspace/Issue.vue"
-  const path = `../views/${componentPath}.vue`
+  const path = `../views/${normalizedPath}.vue`
 
   // 从 glob 映射中查找对应的组件
   const component = modules[path]
@@ -274,6 +297,11 @@ export function menusToSidebar(menus) {
         icon: menu.icon,
         permission: menu.permission,
         children: null
+      }
+
+      // 特殊文案：空间设置二级菜单统一显示为「成员管理」
+      if (menu.path === '/space/settings') {
+        item.label = '成员管理'
       }
 
       // 递归处理子菜单

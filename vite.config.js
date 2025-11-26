@@ -57,19 +57,27 @@ const fixHtmlPathPlugin = () => {
     enforce: 'pre',
     resolveId(id, importer) {
       // 处理别名路径 @/xxx
+      // 注意：Vite 的 resolve.alias 应该能自动处理，但如果它失败了，这里作为备用
       if (id.startsWith('@/')) {
         const relativePath = id.replace('@/', 'src/')
         const resolved = path.resolve(projectRoot, relativePath)
+        
+        // 检查文件是否存在
         try {
           if (fs.existsSync(resolved)) {
             console.log(`[fixHtmlPathPlugin] 别名解析成功: ${id} -> ${resolved}`)
             return resolved
           } else {
             console.warn(`[fixHtmlPathPlugin] 别名路径文件不存在: ${resolved}`)
+            console.warn(`[fixHtmlPathPlugin] 项目根目录: ${projectRoot}`)
+            console.warn(`[fixHtmlPathPlugin] 相对路径: ${relativePath}`)
+            console.warn(`[fixHtmlPathPlugin] 导入来源: ${importer}`)
+            
             // 尝试其他可能的路径
             const altPaths = [
               path.resolve(process.cwd(), relativePath),
-              path.resolve(__dirname, relativePath)
+              path.resolve(__dirname, relativePath),
+              path.resolve(projectRoot, relativePath.replace(/^src\//, ''))
             ]
             for (const altPath of altPaths) {
               if (fs.existsSync(altPath)) {
@@ -77,12 +85,29 @@ const fixHtmlPathPlugin = () => {
                 return altPath
               }
             }
-            // 即使文件不存在也返回，让 Vite 处理错误
+            
+            // 即使文件不存在也返回解析后的路径
+            console.error(`[fixHtmlPathPlugin] 无法找到文件: ${id}，解析为: ${resolved}`)
             return resolved
           }
         } catch (e) {
           console.error(`[fixHtmlPathPlugin] 别名解析错误:`, e)
           return resolved
+        }
+      }
+      
+      // 处理相对路径 ../views/xxx
+      if (id.startsWith('../') && importer && importer.includes('router')) {
+        // 从 router/index.js 解析相对路径
+        const routerDir = path.dirname(importer)
+        const resolved = path.resolve(routerDir, id)
+        try {
+          if (fs.existsSync(resolved)) {
+            console.log(`[fixHtmlPathPlugin] 相对路径解析成功: ${id} -> ${resolved}`)
+            return resolved
+          }
+        } catch (e) {
+          // 忽略错误
         }
       }
       
@@ -176,7 +201,9 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(rootDir, 'src')
+      '@': path.resolve(rootDir, 'src'),
+      // 确保别名使用绝对路径
+      '@/': path.resolve(rootDir, 'src/')
     },
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue'],
     // 确保路径解析正确

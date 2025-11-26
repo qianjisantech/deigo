@@ -46,7 +46,7 @@ const staticChildRoutes = [
   // {
   //   path: '/logs',
   //   name: 'LogManagement',
-  //   component: () => import('@/views/logs/LogManagement.vue'),
+  //   component: () => import('@/views/logs/RecordsManagement.vue'),
   //   meta: {
   //     title: '记录管理',
   //     requiresAuth: true,

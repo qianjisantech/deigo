@@ -177,11 +177,11 @@ console.log('[Vite Config] __dirname:', __dirname)
 
 // 检查关键文件是否存在
 const mainJsPath = path.resolve(rootDir, 'src/main.js')
-const logManagementPath = path.resolve(rootDir, 'src/views/logs/LogManagement.vue')
+const logManagementPath = path.resolve(rootDir, 'src/views/logs/RecordsManagement.vue')
 console.log('[Vite Config] src/main.js 路径:', mainJsPath)
 console.log('[Vite Config] src/main.js 是否存在:', fs.existsSync(mainJsPath))
-console.log('[Vite Config] LogManagement.vue 路径:', logManagementPath)
-console.log('[Vite Config] LogManagement.vue 是否存在:', fs.existsSync(logManagementPath))
+console.log('[Vite Config] RecordsManagement.vue 路径:', logManagementPath)
+console.log('[Vite Config] RecordsManagement.vue 是否存在:', fs.existsSync(logManagementPath))
 
 // 检查 src/views/logs 目录
 const logsDir = path.resolve(rootDir, 'src/views/logs')

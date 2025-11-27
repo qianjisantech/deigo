@@ -25,7 +25,7 @@
       <!-- 二级菜单栏 -->
       <transition name="slide">
         <div v-if="showSecondary" class="secondary-menu" :class="{ 'is-changelog': activeFirstMenu === '/changelog' }">
-          <!-- 二级菜单顶部返回按钮（仅空间模块显示） -->
+          <!-- 二级菜单顶部返回按钮（仅组织模块显示） -->
           <div v-if="activeFirstMenu === '/space'" class="secondary-footer">
             <t-button
               theme="default"
@@ -33,7 +33,7 @@
               size="small"
               @click="handleSecondaryBack"
             >
-              <span>返回空间</span>
+              <span>返回组织</span>
             </t-button>
           </div>
           <!-- 视图加载中状态 -->
@@ -247,7 +247,7 @@ const viewsLoading = ref(false)
 const changelogList = ref([])
 const changelogLoaded = ref(false) // 标记是否已加载过发布日志
 
-// 空间列表（用于默认进入空间设置时带上 spaceId）
+// 组织列表（用于默认进入组织设置时带上 spaceId）
 const spaces = ref([])
 const spacesLoaded = ref(false)
 
@@ -259,7 +259,7 @@ const loadSpaces = async () => {
       spaces.value = res.data || []
     }
   } catch (error) {
-    console.error('[Sidebar] 获取空间列表失败:', error)
+    console.error('[Sidebar] 获取组织列表失败:', error)
   } finally {
     spacesLoaded.value = true
   }
@@ -464,7 +464,7 @@ const menuList = computed(() => {
 
 // 当前二级菜单列表
 const currentSecondaryMenu = computed(() => {
-  // 特殊处理：空间的二级菜单：项目管理 + 成员管理
+  // 特殊处理：组织的二级菜单：项目管理 + 成员管理
   if (activeFirstMenu.value === '/space') {
     return [
       {
@@ -564,15 +564,15 @@ const initActiveMenu = (path) => {
     showSecondary.value = true
     console.log('[路由初始化] 匹配到: 工作台')
   } else if (path === '/space') {
-    // 空间首页：只显示列表，不展示二级菜单
+    // 组织首页：只显示列表，不展示二级菜单
     activeFirstMenu.value = '/space'
     showSecondary.value = false
-    console.log('[路由初始化] 匹配到: 空间列表')
+    console.log('[路由初始化] 匹配到: 组织列表')
   } else if (path.startsWith('/space/')) {
-    // 空间子页面（如 /space/settings）：展示空间相关二级菜单
+    // 组织子页面（如 /space/settings）：展示组织相关二级菜单
     activeFirstMenu.value = '/space'
     showSecondary.value = true
-    console.log('[路由初始化] 匹配到: 空间子页面，展示二级菜单')
+    console.log('[路由初始化] 匹配到: 组织子页面，展示二级菜单')
   } else if (path === '/announcement') {
     activeFirstMenu.value = '/announcement'
     showSecondary.value = false
@@ -891,9 +891,9 @@ const handlePrimaryMenuClick = async (menu) => {
 
   activeFirstMenu.value = menu.value
 
-  // 特殊处理：空间菜单始终直接进入空间列表，不展示二级菜单
+  // 特殊处理：组织菜单始终直接进入组织列表，不展示二级菜单
   if (menu.value === '/space') {
-    console.log('[一级菜单] 空间 - 直接跳转到: /space，不展示二级菜单')
+    console.log('[一级菜单] 组织 - 直接跳转到: /space，不展示二级菜单')
     showSecondary.value = false
     router.push('/space')
     activeMenu.value = '/space'
@@ -1099,7 +1099,7 @@ const handleSecondaryMenuClick = async (item) => {
   // 使用 path 或 value（兼容两种方式）
   const targetPath = item.path || item.value
 
-  // 空间设置相关菜单（项目管理 / 成员管理）
+  // 组织设置相关菜单（项目管理 / 成员管理）
   if (targetPath === '/space/settings') {
     const baseQuery = { ...(item.query || {}) }
 
@@ -1117,7 +1117,7 @@ const handleSecondaryMenuClick = async (item) => {
         query: baseQuery
       })
     } else {
-      // 没有 spaceId 时，才尝试用第一个空间作为默认
+      // 没有 spaceId 时，才尝试用第一个组织作为默认
       await loadSpaces()
       const list = spaces.value || []
       if (list.length > 0) {
@@ -1213,9 +1213,9 @@ const loadMyViews = async () => {
   }
 }
 
-// 二级菜单返回按钮（空间模块）
+// 二级菜单返回按钮（组织模块）
 const handleSecondaryBack = () => {
-  console.log('[二级菜单] 返回空间列表')
+  console.log('[二级菜单] 返回组织列表')
   showSecondary.value = false
   activeMenu.value = '/space'
   router.push('/space')
@@ -1479,7 +1479,7 @@ const handleSubmitCreateView = async (formData) => {
       name: formData.viewName,
       type: formData.viewType,
       config: JSON.stringify({}), // 将 config 转为 JSON 字符串
-      spaceId: null, // 如果不属于特定空间，设为 null
+      spaceId: null, // 如果不属于特定组织，设为 null
       ownerId: null, // 后端会自动设置当前用户
       isPublic: 0, // 默认私有
       folderId: currentFolderId.value, // 设置文件夹ID
@@ -1933,7 +1933,7 @@ onUnmounted(() => {
         }
       }
 
-      // 有操作按钮的菜单项，左侧留出更多空间
+      // 有操作按钮的菜单项，左侧留出更多组织
       &.has-actions {
         .item-label {
           padding-left: 8px;

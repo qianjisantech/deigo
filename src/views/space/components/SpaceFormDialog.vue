@@ -1,7 +1,7 @@
 <template>
   <t-dialog
     v-model:visible="visible"
-    :header="isEdit ? '编辑空间' : '创建空间'"
+    :header="isEdit ? '编辑组织' : '创建组织'"
     :confirm-btn="{ content: '确定', loading: submitting }"
     :on-confirm="handleSubmit"
     width="600px"
@@ -14,26 +14,26 @@
       label-width="100px"
       @submit="handleSubmit"
     >
-      <t-form-item label="空间名称" name="name">
+      <t-form-item label="组织名称" name="name">
         <t-input
           v-model="formData.name"
-          placeholder="请输入空间名称"
+          placeholder="请输入组织名称"
           clearable
         />
       </t-form-item>
 
-      <t-form-item label="空间编码" name="keyword">
+      <t-form-item label="组织编码" name="keyword">
         <t-input
           v-model="formData.keyword"
-          placeholder="请输入空间编码（如：ASD）"
+          placeholder="请输入组织编码（如：ASD）"
           clearable
         />
       </t-form-item>
 
-      <t-form-item label="空间图标" name="icon">
+      <t-form-item label="组织图标" name="icon">
         <t-select
           v-model="formData.icon"
-          placeholder="请选择空间图标"
+          placeholder="请选择组织图标"
           clearable
         >
           <t-option
@@ -50,10 +50,10 @@
         </t-select>
       </t-form-item>
 
-      <t-form-item label="空间描述" name="description">
+      <t-form-item label="组织描述" name="description">
         <t-textarea
           v-model="formData.description"
-          placeholder="请输入空间描述"
+          placeholder="请输入组织描述"
           :autosize="{ minRows: 3, maxRows: 6 }"
         />
       </t-form-item>
@@ -188,17 +188,17 @@ const handleOwnerChange = (value) => {
 // 表单验证规则
 const rules = {
   name: [
-    { required: true, message: '请输入空间名称', type: 'error' },
-    { min: 2, max: 50, message: '空间名称长度为2-50个字符', type: 'error' }
+    { required: true, message: '请输入组织名称', type: 'error' },
+    { min: 2, max: 50, message: '组织名称长度为2-50个字符', type: 'error' }
   ],
   code: [
-    { required: true, message: '请输入空间编码', type: 'error' },
+    { required: true, message: '请输入组织编码', type: 'error' },
     {
       pattern: /^[A-Z0-9_]+$/,
-      message: '空间编码只能包含大写字母、数字和下划线',
+      message: '组织编码只能包含大写字母、数字和下划线',
       type: 'error'
     },
-    { min: 2, max: 20, message: '空间编码长度为2-20个字符', type: 'error' }
+    { min: 2, max: 20, message: '组织编码长度为2-20个字符', type: 'error' }
   ],
   ownerId: [
     { required: true, message: '请输入负责人ID', type: 'error' }
@@ -229,11 +229,11 @@ const handleSubmit = async () => {
     if (isEdit.value) {
       // 编辑模式
       await updateSpace(formData.id, formData)
-      MessagePlugin.success('空间更新成功')
+      MessagePlugin.success('组织更新成功')
     } else {
       // 创建模式
       await createSpace(formData)
-      MessagePlugin.success('空间创建成功')
+      MessagePlugin.success('组织创建成功')
     }
 
     emit('success')

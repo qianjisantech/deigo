@@ -59,10 +59,10 @@ export function generateRoutes(menus, parentPath = '') {
     if (menu.menuType === 2 && menu.path && menu.component) {
       console.log(`[generateRoutes] 生成路由: ${menu.path}`)
 
-      // 特殊处理：空间相关菜单的组件映射
+      // 特殊处理：组织相关菜单的组件映射
       let componentPath = menu.component
       if (menu.path === '/space') {
-        // 空间列表
+        // 组织列表
         componentPath = 'space/Space'
       } else if (menu.path === '/space/settings') {
         // 成员管理页面
@@ -299,7 +299,7 @@ export function menusToSidebar(menus) {
         children: null
       }
 
-      // 特殊文案：空间设置二级菜单统一显示为「成员管理」
+      // 特殊文案：组织设置二级菜单统一显示为「成员管理」
       if (menu.path === '/space/settings') {
         item.label = '成员管理'
       }

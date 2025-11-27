@@ -1,7 +1,7 @@
 <template>
   <div class="detail-header">
     <t-breadcrumb>
-      <t-breadcrumb-item>{{ issue.spaceName || '未知空间' }}</t-breadcrumb-item>
+      <t-breadcrumb-item>{{ issue.spaceName || '未知组织' }}</t-breadcrumb-item>
       <t-breadcrumb-item>{{ issue.issueNo || '-' }}</t-breadcrumb-item>
     </t-breadcrumb>
   </div>

@@ -23,11 +23,11 @@
       label-width="100px"
       @submit="handleSubmit"
     >
-      <!-- 空间 - 必填 -->
-      <t-form-item label="空间" name="spaceId">
+      <!-- 组织 - 必填 -->
+      <t-form-item label="组织" name="spaceId">
         <t-select
           v-model="formData.spaceId"
-          placeholder="请选择空间"
+          placeholder="请选择组织"
           filterable
           :disabled="isEdit"
           @change="handleSpaceChange"
@@ -319,7 +319,7 @@ const formData = ref({
 // 表单验证规则
 const rules = {
   spaceId: [
-    { required: true, message: '请选择空间', type: 'error' }
+    { required: true, message: '请选择组织', type: 'error' }
   ],
   issueType: [
     { required: true, message: '请选择事项类型', type: 'error' }
@@ -413,7 +413,7 @@ const loadData = async () => {
   ])
 }
 
-// 获取空间列表
+// 获取组织列表
 const fetchSpaceList = async () => {
   try {
     const res = await getSpaceList()
@@ -421,7 +421,7 @@ const fetchSpaceList = async () => {
       spaceList.value = res.data || []
     }
   } catch (error) {
-    console.error('获取空间列表失败:', error)
+    console.error('获取组织列表失败:', error)
   }
 }
 
@@ -437,9 +437,9 @@ const fetchUserList = async () => {
   }
 }
 
-// 处理空间变化
+// 处理组织变化
 const handleSpaceChange = (value) => {
-  console.log('选择的空间ID:', value)
+  console.log('选择的组织ID:', value)
 }
 
 // 处理经办人变化
@@ -513,10 +513,10 @@ const handleSubmit = async () => {
       estimatedHours: formData.value.estimatedHours
     }
 
-    // 处理空间信息 - 嵌套对象（必填）
+    // 处理组织信息 - 嵌套对象（必填）
     const space = spaceList.value.find(s => s.id === formData.value.spaceId)
     if (!space) {
-      await MessagePlugin.error('空间信息不存在，请重新选择')
+      await MessagePlugin.error('组织信息不存在，请重新选择')
       return
     }
     submitData.space = {

@@ -8,7 +8,7 @@
             <template #icon>
               <t-icon name="add" />
             </template>
-            新增空间
+            新增组织
           </t-button>
           <t-button theme="primary" @click="handleSearch">查询</t-button>
           <t-button theme="default" @click="handleReset">重置</t-button>
@@ -18,8 +18,8 @@
       <!-- 搜索条件 -->
       <div class="search-form">
         <t-form :data="searchForm" layout="inline">
-          <t-form-item label="空间名称" name="name">
-            <t-input v-model="searchForm.name" placeholder="请输入空间名称" clearable style="width: 200px;" />
+          <t-form-item label="组织名称" name="name">
+            <t-input v-model="searchForm.name" placeholder="请输入组织名称" clearable style="width: 200px;" />
           </t-form-item>
 
           <t-form-item label="关键词" name="keyword">
@@ -55,7 +55,7 @@
         <template #operation="{ row }">
           <t-space>
             <t-button v-permission="'space:view'" theme="primary" variant="text" size="small" @click="handleEnterSpace(row)">
-              进入空间
+              进入组织
             </t-button>
             <t-button v-permission="'space:edit'" theme="primary" variant="text" size="small" @click="handleEdit(row)">
               编辑
@@ -83,7 +83,7 @@
       </div>
     </t-card>
 
-    <!-- 创建/编辑空间对话框 -->
+    <!-- 创建/编辑组织对话框 -->
     <SpaceFormDialog
       v-model="showFormDialog"
       :space-data="currentSpace"
@@ -121,7 +121,7 @@ const pagination = ref({
 const columns = [
   {
     colKey: 'name',
-    title: '空间名称',
+    title: '组织名称',
     width: 280,
     align: 'left'
   },
@@ -146,16 +146,16 @@ const columns = [
   }
 ]
 
-// 空间列表
+// 组织列表
 const spaceList = ref([])
 
 // 控制表单对话框显示
 const showFormDialog = ref(false)
 
-// 当前操作的空间数据
+// 当前操作的组织数据
 const currentSpace = ref(null)
 
-// 获取空间列表
+// 获取组织列表
 const fetchSpaceList = async () => {
   try {
     loading.value = true
@@ -179,11 +179,11 @@ const fetchSpaceList = async () => {
       // 更新总数
       pagination.value.total = res.data.total || records.length
     } else {
-      await MessagePlugin.error(res.message || '获取空间列表失败')
+      await MessagePlugin.error(res.message || '获取组织列表失败')
     }
   } catch (error) {
-    console.error('获取空间列表失败:', error)
-    await MessagePlugin.error('获取空间列表失败')
+    console.error('获取组织列表失败:', error)
+    await MessagePlugin.error('获取组织列表失败')
   } finally {
     loading.value = false
   }
@@ -223,35 +223,35 @@ const handleReset = () => {
   fetchSpaceList()
 }
 
-// 处理创建空间
+// 处理创建组织
 const handleCreate = () => {
   currentSpace.value = null
   showFormDialog.value = true
 }
 
-// 处理编辑空间
+// 处理编辑组织
 const handleEdit = (row) => {
   currentSpace.value = { ...row }
   showFormDialog.value = true
 }
 
-// 处理删除空间
+// 处理删除组织
 const handleDelete = (row) => {
   const confirmDialog = DialogPlugin.confirm({
     header: '确认删除',
-    body: `确定要删除空间"${row.name}"吗？此操作不可恢复。`,
+    body: `确定要删除组织"${row.name}"吗？此操作不可恢复。`,
     confirmBtn: '删除',
     cancelBtn: '取消',
     theme: 'danger',
     onConfirm: async () => {
       try {
         await deleteSpace(row.id)
-        MessagePlugin.success('空间删除成功')
+        MessagePlugin.success('组织删除成功')
         // 刷新列表
         fetchSpaceList()
         confirmDialog.hide()
       } catch (error) {
-        console.error('删除空间失败:', error)
+        console.error('删除组织失败:', error)
         const message = error.response?.data?.message || error.message || '删除失败'
         MessagePlugin.error(message)
       }
@@ -259,7 +259,7 @@ const handleDelete = (row) => {
   })
 }
 
-// 处理进入空间：跳转到空间设置页面
+// 处理进入组织：跳转到组织设置页面
 const handleEnterSpace = (row) => {
   router.push({
     path: '/space/settings',

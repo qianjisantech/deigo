@@ -7,15 +7,6 @@
         <slot name="actions"></slot>
       </div>
 
-      <!-- 右侧按钮 -->
-      <div v-if="!isLoggedIn" class="header-right">
-        <t-button theme="primary" variant="text" @click="goToHome" class="home-button">
-          <template #icon>
-            <t-icon name="home" />
-          </template>
-          返回首页
-        </t-button>
-      </div>
     </div>
   </div>
 </template>

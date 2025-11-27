@@ -8,9 +8,9 @@
     @update:visible="handleClose"
   >
     <div v-if="editingIssue" class="edit-issue-dialog">
-      <!-- 顶部：空间和事项类型 -->
+      <!-- 顶部：组织和事项类型 -->
       <div class="issue-top-info">
-        <t-form-item label="空间">
+        <t-form-item label="组织">
           <t-input disabled v-model="editingIssue.space" readonly class="readonly-field" />
         </t-form-item>
         <t-form-item label="事项类型">

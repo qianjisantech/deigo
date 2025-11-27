@@ -166,11 +166,11 @@
             </t-option>
           </t-select>
 
-          <!-- 空间选择 -->
+          <!-- 组织选择 -->
           <t-select
             v-else-if="filter.field === 'spaceId'"
             v-model="filter.value"
-            placeholder="请选择空间"
+            placeholder="请选择组织"
             clearable
             size="small"
           >
@@ -291,7 +291,7 @@ const filterFields = [
   { label: '状态', value: 'status', icon: 'task' },
   { label: '优先级', value: 'priority', icon: 'flag' },
   { label: '经办人', value: 'assigneeId', icon: 'user' },
-  { label: '空间', value: 'spaceId', icon: 'layers' },
+  { label: '组织', value: 'spaceId', icon: 'layers' },
   { label: '日期范围', value: 'dateRange', icon: 'calendar' }
 ]
 

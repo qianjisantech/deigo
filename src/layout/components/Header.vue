@@ -7,7 +7,7 @@
           v-model="currentSpaceId"
           :options="spaceOptions"
           size="medium"
-          placeholder="选择空间"
+          placeholder="选择组织"
           class="space-switch-select"
         />
       </template>
@@ -159,10 +159,10 @@ let websocket = null
 let reconnectTimeout = null
 let heartbeatInterval = null
 
-// 当前是否为空间设置页面
+// 当前是否为组织设置页面
 const isSpaceSettings = computed(() => route.path === '/space/settings')
 
-// 空间列表（来自 /space/list 接口）
+// 组织列表（来自 /space/list 接口）
 const spaces = ref([])
 
 // 页面标题映射
@@ -178,7 +178,7 @@ const pageTitleMap = {
   '/rbac/dict': '字典管理',
   '/rbac/config': '配置管理',
   // 其他一级菜单
-  '/space': '空间',
+  '/space': '组织',
   '/announcement': '公告',
   '/feedback': '问题反馈',
   '/changelog': '发布日志',
@@ -202,7 +202,7 @@ const getSettingsTitle = (path) => {
 }
 
 const pageTitle = computed(() => {
-  // 空间设置页面不显示固定标题，改为空间下拉框
+  // 组织设置页面不显示固定标题，改为组织下拉框
   if (isSpaceSettings.value) {
     return ''
   }
@@ -230,7 +230,7 @@ const pageTitle = computed(() => {
   return '工作台'
 })
 
-// 空间下拉：空间列表（来自接口数据）
+// 组织下拉：组织列表（来自接口数据）
 const spaceOptions = computed(() => {
   const list = spaces.value || []
   return list.map(space => ({
@@ -239,7 +239,7 @@ const spaceOptions = computed(() => {
   }))
 })
 
-// 当前选择的空间 ID（字符串形式，方便和下拉绑定）
+// 当前选择的组织 ID（字符串形式，方便和下拉绑定）
 const currentSpaceId = computed({
   get() {
     const idFromQuery = route.query.spaceId || route.query.id
@@ -247,7 +247,7 @@ const currentSpaceId = computed({
     const id = idFromQuery || idFromParam
     if (id) return String(id)
 
-    // 如果路由上没有空间ID，fallback 到第一个空间
+    // 如果路由上没有组织ID，fallback 到第一个组织
     const list = spaces.value || []
     return list.length > 0 ? String(list[0].id) : ''
   },
@@ -369,14 +369,14 @@ const closeWebSocket = () => {
   }
 }
 
-// 加载空间列表
+// 加载组织列表
 const loadSpaces = async () => {
   try {
     const res = await getSpaceList()
     if (res.success || res.code === 200) {
       spaces.value = res.data || []
 
-      // 如果当前在空间设置页且路由上没有 spaceId，则默认跳到第一个空间
+      // 如果当前在组织设置页且路由上没有 spaceId，则默认跳到第一个组织
       if (isSpaceSettings.value && !route.query.spaceId && spaces.value.length > 0) {
         router.replace({
           path: '/space/settings',
@@ -385,11 +385,11 @@ const loadSpaces = async () => {
       }
     }
   } catch (error) {
-    console.error('[Header] 加载空间列表失败:', error)
+    console.error('[Header] 加载组织列表失败:', error)
   }
 }
 
-// 组件挂载时初始化通知和空间列表
+// 组件挂载时初始化通知和组织列表
 onMounted(() => {
   // 优先从环境变量加载通知
   const loadedFromEnv = loadNoticeFromEnv()

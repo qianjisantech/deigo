@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+﻿import { ref, computed } from 'vue'
 import { getItem, setItem } from '@/utils/indexedDB'
 
 /**
@@ -62,14 +62,14 @@ export function useColumnConfig() {
     },
     {
       colKey: 'spaceId',
-      title: '空间ID',
+      title: '组织ID',
       width: 100,
       align: 'center',
       visible: false
     },
     {
       colKey: 'spaceName',
-      title: '空间名称',
+      title: '组织名称',
       width: 150,
       align: 'center',
       visible: false

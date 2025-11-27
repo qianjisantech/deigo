@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="role-container">
     <t-card class="role-card">
       <!-- 操作按钮区域 -->
@@ -267,7 +267,6 @@ const formTitle = computed(() => {
 const menuTreeData = ref([])
 const selectedPermissions = ref([])
 const expandedKeys = ref([]) // 展开的节点keys
-const expandedKeys = ref([]) // 展开的节点keys
 
 // 加载角色列表
 const loadRoleList = async () => {
@@ -518,7 +517,7 @@ onMounted(() => {
 // 抽屉样式
 :deep(.permission-drawer) {
   .t-drawer__content-wrapper {
-    padding-top: 64px; // 为顶部 Header 预留空间
+    padding-top: 64px; // 为顶部 Header 预留组织
   }
   
   .t-drawer__body {

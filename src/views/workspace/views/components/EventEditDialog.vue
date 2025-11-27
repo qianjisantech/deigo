@@ -6,10 +6,10 @@
     @confirm="handleSave"
   >
     <div v-if="localEvent" class="edit-event-dialog">
-      <!-- 顶部：空间和事项类型 -->
+      <!-- 顶部：组织和事项类型 -->
       <div class="event-top-info">
-        <t-form-item label="空间">
-          <t-select v-model="localEvent.space" placeholder="请选择空间">
+        <t-form-item label="组织">
+          <t-select v-model="localEvent.space" placeholder="请选择组织">
             <t-option value="项目A" label="项目A" />
             <t-option value="项目B" label="项目B" />
             <t-option value="项目C" label="项目C" />

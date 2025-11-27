@@ -1,4 +1,4 @@
-# 事项筛选器组件使用说明
+﻿# 事项筛选器组件使用说明
 
 ## 组件介绍
 
@@ -80,7 +80,7 @@ const handleFilterConfirm = (conditions) => {
 | filterConditions | Array | [] | 筛选条件数组 |
 | filteredCount | Number | null | 筛选结果数量 |
 | userList | Array | [] | 用户列表（用于经办人筛选） |
-| spaceList | Array | [] | 空间列表（用于空间筛选） |
+| spaceList | Array | [] | 组织列表（用于组织筛选） |
 
 ### IssueFilter Props
 
@@ -89,7 +89,7 @@ const handleFilterConfirm = (conditions) => {
 | filterConditions | Array | [] | 筛选条件数组 |
 | filteredCount | Number | null | 筛选结果数量 |
 | userList | Array | [] | 用户列表 |
-| spaceList | Array | [] | 空间列表 |
+| spaceList | Array | [] | 组织列表 |
 
 ## Events 说明
 
@@ -130,7 +130,7 @@ filterConditions = [
 | status | 状态 | Integer (0-3) |
 | priority | 优先级 | Integer (1-3) |
 | assigneeId | 经办人 | Integer (用户ID) |
-| spaceId | 空间 | Integer (空间ID) |
+| spaceId | 组织 | Integer (组织ID) |
 | dateRange | 日期范围 | Array [startDate, endDate] |
 
 ## 样式特点

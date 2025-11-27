@@ -101,7 +101,7 @@ export const useUserStore = defineStore('user', () => {
         // 保存角色
         roles.value = data.roles || []
 
-        // 保存空间
+        // 保存组织
         userSpaces.value = data.spaces || []
 
         // 生成路由配置
@@ -169,7 +169,7 @@ export const useUserStore = defineStore('user', () => {
     return menuPermissions.value.includes(permission)
   }
 
-  // 检查是否有某个空间的权限
+  // 检查是否有某个组织的权限
   const hasSpacePermission = (spaceId, permission) => {
     const space = userSpaces.value.find(s => s.id === spaceId)
     return space ? space.permissions.includes(permission) : false

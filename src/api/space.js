@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 /**
- * 获取空间列表（分页）
+ * 获取组织列表（分页）
  * @param {object} data - 查询参数
  * @returns {Promise}
  */
@@ -11,12 +11,12 @@ export function getSpaceListPage(data) {
     method: 'post',
     data,
     showLoading: true,
-    loadingText: '正在加载空间列表...'
+    loadingText: '正在加载组织列表...'
   })
 }
 
 /**
- * 获取空间列表（全部）
+ * 获取组织列表（全部）
  * @returns {Promise}
  */
 export function getSpaceList() {
@@ -28,8 +28,8 @@ export function getSpaceList() {
 }
 
 /**
- * 创建空间
- * @param {object} data - 空间数据
+ * 创建组织
+ * @param {object} data - 组织数据
  * @returns {Promise}
  */
 export function createSpace(data) {
@@ -41,9 +41,9 @@ export function createSpace(data) {
 }
 
 /**
- * 更新空间
- * @param {number} id - 空间ID
- * @param {object} data - 空间数据
+ * 更新组织
+ * @param {number} id - 组织ID
+ * @param {object} data - 组织数据
  * @returns {Promise}
  */
 export function updateSpace(id, data) {
@@ -55,8 +55,8 @@ export function updateSpace(id, data) {
 }
 
 /**
- * 删除空间
- * @param {number} id - 空间ID
+ * 删除组织
+ * @param {number} id - 组织ID
  * @returns {Promise}
  */
 export function deleteSpace(id) {
@@ -67,8 +67,8 @@ export function deleteSpace(id) {
 }
 
 /**
- * 获取空间详情
- * @param {number} id - 空间ID
+ * 获取组织详情
+ * @param {number} id - 组织ID
  * @returns {Promise}
  */
 export function getSpaceDetail(id) {
@@ -79,7 +79,7 @@ export function getSpaceDetail(id) {
 }
 
 /**
- * 根据用户ID获取空间列表
+ * 根据用户ID获取组织列表
  * @param {number} ownerId - 用户ID
  * @returns {Promise}
  */
@@ -91,7 +91,7 @@ export function getSpaceListByOwner(ownerId) {
 }
 
 /**
- * 获取空间成员列表（分页）
+ * 获取组织成员列表（分页）
  * @param {object} params - 查询参数
  * @returns {Promise}
  */
@@ -104,7 +104,7 @@ export function getSpaceMemberPage(params) {
 }
 
 /**
- * 添加空间成员
+ * 添加组织成员
  * @param {object} data - 成员数据
  * @returns {Promise}
  */
@@ -117,7 +117,7 @@ export function addSpaceMember(data) {
 }
 
 /**
- * 更新空间成员
+ * 更新组织成员
  * @param {number} id - 成员ID
  * @param {object} data - 成员数据
  * @returns {Promise}
@@ -131,7 +131,7 @@ export function updateSpaceMember(id, data) {
 }
 
 /**
- * 删除空间成员
+ * 删除组织成员
  * @param {number} id - 成员ID
  * @returns {Promise}
  */
@@ -143,8 +143,8 @@ export function deleteSpaceMember(id) {
 }
 
 /**
- * 获取可添加到空间的用户列表
- * @param {number} spaceId - 空间ID
+ * 获取可添加到组织的用户列表
+ * @param {number} spaceId - 组织ID
  * @returns {Promise}
  */
 export function getAvailableUsers(spaceId) {

@@ -7,7 +7,7 @@
       <div class="section-wrapper">
         <div class="members-section">
           <div class="section-header">
-            <h3>空间成员</h3>
+            <h3>组织成员</h3>
             <t-button theme="primary" size="small" @click="handleAddMember">
               <template #icon>
                 <t-icon name="add" />
@@ -124,7 +124,7 @@
           </t-form-item>
           <t-form-item v-if="editingMember.originalRole === 'admin'">
             <div style="color: #e34d59; font-size: 12px;">
-              <t-icon name="info-circle" /> 管理员角色不可修改，空间必须至少有一个管理员
+              <t-icon name="info-circle" /> 管理员角色不可修改，组织必须至少有一个管理员
             </div>
           </t-form-item>
         </t-form>
@@ -380,7 +380,7 @@ const handleSaveEdit = async () => {
 const handleRemoveMember = (member) => {
   const confirmDialog = DialogPlugin.confirm({
     header: '确认移除成员',
-    body: `确定要将 ${member.username}（${member.nickname || member.email}）移除出空间吗？`,
+    body: `确定要将 ${member.username}（${member.nickname || member.email}）移除出组织吗？`,
     theme: 'warning',
     onConfirm: async () => {
       try {

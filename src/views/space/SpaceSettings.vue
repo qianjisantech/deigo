@@ -6,7 +6,7 @@
           v-if="spaceId"
           :space-id="spaceId"
         />
-        <t-empty v-else description="未指定空间，请从空间列表进入" />
+        <t-empty v-else description="未指定组织，请从组织列表进入" />
       </div>
     </t-card>
   </div>

@@ -153,8 +153,8 @@ const allColumnOptions = [
   { label: '状态', value: 'status' },
   { label: '优先级', value: 'priority' },
   { label: '事项类型', value: 'issue_type' },
-  { label: '空间ID', value: 'space_id' },
-  { label: '空间名称', value: 'space_name' },
+  { label: '组织ID', value: 'space_id' },
+  { label: '组织名称', value: 'space_name' },
   { label: '负责人ID', value: 'assignee_id' },
   { label: '负责人工号', value: 'assignee_code' },
   { label: '负责人', value: 'assignee_name' },
@@ -210,12 +210,12 @@ const columnDefinitions = {
   },
   space_id: {
     colKey: 'spaceId',
-    title: '空间ID',
+    title: '组织ID',
     width: 100
   },
   space_name: {
     colKey: 'spaceName',
-    title: '空间名称',
+    title: '组织名称',
     width: 150
   },
   assignee_id: {

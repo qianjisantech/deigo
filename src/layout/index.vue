@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="layout-container">
     <!-- 顶部Header区域 -->
     <Header />
@@ -149,7 +149,7 @@ onMounted(async () => {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 64px; // 为顶部Header预留空间
+    margin-top: 64px; // 为顶部Header预留组织
     min-height: calc(100vh - 64px);
   }
 
@@ -158,7 +158,7 @@ onMounted(async () => {
     flex: 1;
     display: flex;
     overflow: hidden;
-    margin-top: 64px; // 为顶部Header预留空间
+    margin-top: 64px; // 为顶部Header预留组织
   }
 
   .layout-main {

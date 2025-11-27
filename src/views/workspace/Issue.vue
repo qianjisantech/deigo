@@ -6,40 +6,44 @@
         <t-card class="task-card">
           <div class="task-header">
             <div class="header-left">
-              <h3 class="task-title">我的事项</h3>
-              <span class="task-count">共 {{ pagination.total }} 条</span>
-              <t-button
-                theme="default"
-                variant="text"
-                size="small"
-                @click="handleRefresh"
-                class="refresh-button"
-              >
-                <template #icon>
-                  <t-icon name="refresh" size="14px" />
-                </template>
-              </t-button>
-            </div>
-            <div class="header-right">
-              <div class="filter-button-wrapper">
+              <div class="title-info">
+                <h3 class="task-title">我的事项</h3>
+                <span class="task-count">共 {{ pagination.total }} 条</span>
+              </div>
+              <div class="left-actions">
+                <div class="filter-button-wrapper">
+                  <t-button
+                    theme="default"
+                    variant="outline"
+                    size="small"
+                    @click="showFilterDialog = true"
+                    class="filter-button"
+                  >
+                    <template #icon>
+                      <t-icon name="filter" size="14px" />
+                    </template>
+                    筛选
+                  </t-button>
+                  <t-badge
+                    v-if="activeFilterCount > 0"
+                    :count="activeFilterCount"
+                    :offset="[-6, 6]"
+                  />
+                </div>
                 <t-button
                   theme="default"
-                  variant="outline"
+                  variant="text"
                   size="small"
-                  @click="showFilterDialog = true"
-                  class="filter-button"
+                  @click="handleRefresh"
+                  class="refresh-button"
                 >
                   <template #icon>
-                    <t-icon name="filter" size="14px" />
+                    <t-icon name="refresh" size="14px" />
                   </template>
-                  筛选
                 </t-button>
-                <t-badge
-                  v-if="activeFilterCount > 0"
-                  :count="activeFilterCount"
-                  :offset="[-6, 6]"
-                />
               </div>
+            </div>
+            <div class="header-right">
               <t-button
                 theme="default"
                 variant="text"
@@ -412,9 +416,9 @@
       @confirm="handleSaveEditedIssue"
     >
       <div v-if="editingIssue" class="edit-issue-dialog">
-        <!-- 顶部：空间和事项类型 -->
+        <!-- 顶部：组织和事项类型 -->
         <div class="issue-top-info">
-          <t-form-item label="空间">
+          <t-form-item label="组织">
             <t-input disabled v-model="editingIssue.space" readonly class="readonly-field" />
           </t-form-item>
           <t-form-item label="事项类型">
@@ -568,7 +572,7 @@ const schedule = ref([])
 // 用户列表（用于解析排期中的用户信息）
 const userList = ref([])
 
-// 空间列表（用于筛选器）
+// 组织列表（用于筛选器）
 const spaceList = ref([])
 
 // 行内编辑状态
@@ -708,14 +712,14 @@ const columns = ref([
   },
   {
     colKey: 'spaceId',
-    title: '空间ID',
+    title: '组织ID',
     width: 100,
     align: 'center',
     visible: false
   },
   {
     colKey: 'spaceName',
-    title: '空间名称',
+    title: '组织名称',
     width: 150,
     align: 'center',
     visible: false
@@ -941,7 +945,7 @@ const fetchUserList = async () => {
   }
 }
 
-// 获取空间列表
+// 获取组织列表
 const fetchSpaceList = async () => {
   try {
     const res = await getSpaceList()
@@ -949,7 +953,7 @@ const fetchSpaceList = async () => {
       spaceList.value = res.data || []
     }
   } catch (error) {
-    console.error('获取空间列表失败:', error)
+    console.error('获取组织列表失败:', error)
   }
 }
 
@@ -1779,7 +1783,20 @@ const handleSaveEditedIssue = async () => {
       .header-left {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 24px;
+        flex-wrap: wrap;
+
+        .title-info {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .left-actions {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
 
         .task-title {
           font-size: 18px;
@@ -1792,6 +1809,35 @@ const handleSaveEditedIssue = async () => {
           font-size: 14px;
           color: #646a73;
           margin-left: 12px;
+        }
+
+        .filter-button-wrapper {
+          position: relative;
+
+          .filter-button {
+            background: rgba(0, 82, 217, 0.08) !important;
+            border-color: rgba(0, 82, 217, 0.3);
+            color: #0052d9;
+            font-size: 13px;
+            padding: 4px 12px;
+            height: 28px;
+            transition: all 0.3s;
+
+            &:hover {
+              background: rgba(0, 82, 217, 0.15) !important;
+              border-color: #0052d9;
+              transform: translateY(-1px);
+              box-shadow: 0 1px 4px rgba(0, 82, 217, 0.2);
+            }
+
+            :deep(.t-icon) {
+              color: #0052d9;
+            }
+
+            :deep(.t-button__text) {
+              font-size: 13px;
+            }
+          }
         }
 
         .refresh-button {
@@ -1828,34 +1874,6 @@ const handleSaveEditedIssue = async () => {
         align-items: center;
         gap: 12px;
 
-        .filter-button-wrapper {
-          position: relative;
-
-          .filter-button {
-            background: rgba(0, 82, 217, 0.08) !important;
-            border-color: rgba(0, 82, 217, 0.3);
-            color: #0052d9;
-            font-size: 13px;
-            padding: 4px 12px;
-            height: 28px;
-            transition: all 0.3s;
-
-            &:hover {
-              background: rgba(0, 82, 217, 0.15) !important;
-              border-color: #0052d9;
-              transform: translateY(-1px);
-              box-shadow: 0 1px 4px rgba(0, 82, 217, 0.2);
-            }
-
-            :deep(.t-icon) {
-              color: #0052d9;
-            }
-
-            :deep(.t-button__text) {
-              font-size: 13px;
-            }
-          }
-        }
 
         .create-btn {
           font-weight: 500;
